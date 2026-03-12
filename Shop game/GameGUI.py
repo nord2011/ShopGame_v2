@@ -6,6 +6,7 @@ from token import NEWLINE
 import shop
 from random import *
 
+##Изменение
 
 player = shop.Player(name="Игрок", initial_balance=1000, max_storage=500)
 
