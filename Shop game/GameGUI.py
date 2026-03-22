@@ -2,11 +2,9 @@ from itertools import product
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo, showwarning
 from token import NEWLINE
-
 import shop
 from random import *
 
-##Изменение
 
 player = shop.Player(name="Игрок", initial_balance=1000, max_storage=500)
 
@@ -28,7 +26,7 @@ def update_inventory():
 
 
     for product in player.inventory:
-        inventory_list.insert(END, f"{product.name} // Стоимость продажи: {product.sell_price} // Количество: {product.quantity}")
+        inventory_list.insert(END, f"{product.name} // Стоимость продажи: {product.sell_price} // Количество: {product.quantity} // Прибыль: {product.income}")
 
 
 
@@ -36,7 +34,7 @@ def update_Shop_list():
     buy_list.delete(0, END)
 
     for shop in player.shop.shop_list:
-        buy_list.insert(END,f"{shop.name} // Стоимость покупки: {shop.purchase_price}// Стоимость продажи: {shop.sell_price} // Количество: {shop.quantity}")
+        buy_list.insert(END,f"{shop.name} // Стоимость покупки: {shop.purchase_price}// Стоимость продажи: {shop.sell_price} // Количество: {shop.quantity} // Прибыль: {shop.income}")
 
 
 
@@ -86,7 +84,7 @@ def buy_button_click():
 def add_button_click():
     add_window = Toplevel(window)
     add_window.title("Добавление товара (предмета)")
-    add_window.geometry("430x280")
+    add_window.geometry("430x330")
     add_window.resizable(False, False)
     add_window.configure(bg="black")
 
@@ -95,6 +93,7 @@ def add_button_click():
     sell_var = StringVar()
     quantity_var = StringVar()
     stackable_var = StringVar()
+    income_var = StringVar()
 
     Label(add_window,text=f"Название: ",bg="black",fg="white").pack(pady=5,anchor="w")
     name_entry = Entry(add_window, textvariable=name_var)
@@ -115,8 +114,8 @@ def add_button_click():
     quantity_entry.place(x=10, y=151, width=80)
 
     Label(add_window, text=f"Стакается: ", bg="black", fg="white").pack(pady=7, anchor="w")
-    stackable = BooleanVar()
-    stackable.set(True)
+    stackable_entry = BooleanVar()
+    stackable_entry.set(True)
     stak_checkbox = Checkbutton(
         add_window,
         variable=stackable_var,
@@ -127,23 +126,31 @@ def add_button_click():
         selectcolor="grey")
     stak_checkbox.place(x=10, y=193, width=80)
 
+    Label(add_window, text="Прибыль: ", bg="black", fg="white").pack(pady=15, anchor="w")
+    income_entry = Entry(add_window, textvariable=income_var)
+    income_entry.place(x=10,y=240, width=80)
+
     def add_item_click():
         name = name_var.get().strip()
         purchase = purchase_var.get().strip()
         sell = sell_var.get().strip()
         quantity = quantity_var.get().strip()
         stackable = stackable_var.get()
+        income = income_var.get().strip()
 
-        if name == "" or purchase == "" or sell == "" or quantity == "":
+        if name == "" or purchase == "" or sell == "" or quantity == "" or income == "":
             showwarning(message="Нужно всё заполнить!", title="Подсказка")
             return
+        elif stackable == "":
+            stackable = 1
         try:
             purchase = int(purchase)
             sell = int(sell)
             quantity = int(quantity)
             stackable = int(stackable)
+            income = int(income)
         except ValueError:
-            showwarning(message="`Стоимость покупки`/`Стоимость продажи`/`Количество` нужно указать в цифрах!",
+            showwarning(message="`Стоимость покупки`/`Стоимость продажи`/`Количество`/`Прибыль` нужно указать в цифрах!",
                         title="Подсказка")
             return
         ##if purchase != int or sell != int or quantity != int:
@@ -153,7 +160,7 @@ def add_button_click():
             quantity = 1
             showwarning(message="Количество этого товара не может превышать больше 1 так как не стакается", title="Подсказка")
 
-        new_product = shop.Product(name=name, purchase_price=purchase, sell_price=sell, quantity=quantity, stak=True)
+        new_product = shop.Product(name=name, purchase_price=purchase, sell_price=sell, quantity=quantity, stak=True, income=income)
         player.shop.shop_list.append(new_product)
         update_Shop_list()
 
@@ -168,6 +175,17 @@ def add_button_click():
     cancel_button = Button(add_window, text="Вернуться назад", bg="black", fg="white", command=cancel)
     cancel_button.pack(anchor="se", padx=10, pady=5)
 
+def auto_income():
+    total_income = 0
+    for product in player.inventory:
+        if product.stak:
+            total_income += product.income * product.quantity
+        else:
+            total_income += product.income
+
+    player.balance += total_income
+    update_balance()
+    window.after(1000, auto_income)
 
 
 
@@ -333,5 +351,7 @@ buy_list.pack(fill="x", side="bottom")
 update_balance()
 update_inventory()
 update_Shop_list()
+
+auto_income()
 
 window.mainloop()

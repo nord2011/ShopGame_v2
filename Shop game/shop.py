@@ -2,12 +2,13 @@ from itertools import product
 import copy
 
 class Product:
-    def __init__(self, name, purchase_price, sell_price, quantity=1, stak=False):
+    def __init__(self, name, purchase_price, sell_price, quantity=1, stak=False, income=1):
         self.name = name
         self.purchase_price = purchase_price
         self.sell_price = sell_price
         self.quantity = quantity
         self.stak = stak
+        self.income = income
 
     def str(self):
         return f"{self.name}: {self.quantity} шт. (покупка: {self.purchase_price}, продажа: {self.sell_price})"
