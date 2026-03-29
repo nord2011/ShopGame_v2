@@ -10,17 +10,17 @@ from json import *
 global boost
 boost = 1
 
-player = shop.Player(name="Игрок", initial_balance=1000, max_storage=500)
+player = shop.Player(name="Игрок", initial_balance=100, max_storage=500)
 
-apple = shop.Product(name="Яблоко", purchase_price=50, sell_price=30, quantity=2, stak=True)
+"""apple = shop.Product(name="Яблоко", purchase_price=50, sell_price=30, quantity=2, stak=True)
 Arbyz = shop.Product(name="Арбуз", purchase_price=100, sell_price=80, quantity=5, stak=True)
-Sword = shop.Product(name="Меч Хуже", purchase_price=200, sell_price=160, stak=False)
+Sword = shop.Product(name="Меч Хуже", purchase_price=200, sell_price=160, stak=False)"""
 
 Shop = shop.Shop(name="Магазин")
 
-player.inventory.append(apple)
+"""player.inventory.append(apple)
 player.inventory.append(Arbyz)
-player.inventory.append(Sword)
+player.inventory.append(Sword)"""
 
 def update_balance():
     balance.config(text=f"${player.balance:.1f}")
@@ -221,9 +221,13 @@ def update_progress():
 
 def reset_button_click():
     global boost
+    shop_inv = player.shop.shop_list.copy()
     player.shop.shop_list.clear()
     for product in player.inventory:
         player.shop.shop_list.append(product)
+    for product in shop_inv:
+        player.shop.shop_list.append(product)
+
     player.inventory.clear()
     update_inventory()
 

@@ -248,9 +248,12 @@ class Shop:
     def __init__(self, name):
         self.name = name
         self.shop_list = [
-            Product(name="Меч", purchase_price=200, sell_price=160, stak=False),
-            Product(name="Апельсин", purchase_price=50, sell_price=30, quantity= 10, stak=True),
-            Product(name="Лук", purchase_price=350, sell_price=270, stak=False)
+            Product(name="Меч", purchase_price=250, sell_price=200, stak=False, income=6),
+            Product(name="Апельсин", purchase_price=50, sell_price=30, quantity= 10, stak=True, income=1),
+            Product(name="Лук", purchase_price=350, sell_price=270, stak=False, income=8),
+            Product(name="Яблоко", purchase_price=50, sell_price=30, quantity=2, stak=True, income=1),
+            Product(name="Арбуз", purchase_price=100, sell_price=80, quantity=5, stak=True, income=2),
+            Product(name="Меч Хуже", purchase_price=200, sell_price=160, stak=False, income=5),
 
         ]
 
