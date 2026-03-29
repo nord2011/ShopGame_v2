@@ -1,10 +1,14 @@
 from itertools import product
 from tkinter import *
 from tkinter.messagebox import showerror, showinfo, showwarning
+from tkinter.ttk import Progressbar
 from token import NEWLINE
 import shop
 from random import *
+from json import *
 
+global boost
+boost = 1
 
 player = shop.Player(name="Игрок", initial_balance=1000, max_storage=500)
 
@@ -19,7 +23,7 @@ player.inventory.append(Arbyz)
 player.inventory.append(Sword)
 
 def update_balance():
-    balance.config(text=f"${player.balance}")
+    balance.config(text=f"${player.balance:.1f}")
 
 def update_inventory():
     inventory_list.delete(0, END)
@@ -63,6 +67,7 @@ def sell_button_click():
     update_balance()
     update_inventory()
     update_Shop_list()
+    update_progress()
 
 def buy_button_click():
     add_prod = buy_list.curselection()
@@ -78,6 +83,7 @@ def buy_button_click():
     update_balance()
     update_inventory()
     update_Shop_list()
+    update_progress()
 
 
 
@@ -163,6 +169,7 @@ def add_button_click():
         new_product = shop.Product(name=name, purchase_price=purchase, sell_price=sell, quantity=quantity, stak=True, income=income)
         player.shop.shop_list.append(new_product)
         update_Shop_list()
+        update_progress()
 
         add_window.destroy()
 
@@ -176,19 +183,54 @@ def add_button_click():
     cancel_button.pack(anchor="se", padx=10, pady=5)
 
 def auto_income():
+
     total_income = 0
+
     for product in player.inventory:
         if product.stak:
             total_income += product.income * product.quantity
         else:
             total_income += product.income
 
-    player.balance += total_income
+    player.balance += total_income * boost
     update_balance()
+
     window.after(1000, auto_income)
 
+def update_progress():
+    global progress_value
+    global boost
 
+    total_item = 0
+    target_progress_bar = 10 * boost
 
+    for product in player.inventory:
+        if product.stak:
+            total_item += product.quantity
+        else:
+            total_item += 1
+
+    progress_value = total_item / target_progress_bar * 100
+    progress_bar["value"] = progress_value
+
+    if progress_value >= 100:
+        reset_button.pack(side="bottom", fill="x", padx=0, pady=10)
+    else:
+        reset_button.pack_forget()
+
+def reset_button_click():
+    global boost
+    player.shop.shop_list.clear()
+    for product in player.inventory:
+        player.shop.shop_list.append(product)
+    player.inventory.clear()
+    update_inventory()
+
+    update_Shop_list()
+    player.balance = 100 * boost
+    boost += 0.5 * boost
+    update_balance()
+    update_progress()
 
 
 def del_button_click():
@@ -272,6 +314,7 @@ sell_button = Button(right_panel,
                      command=sell_button_click)
 sell_button.pack(side="bottom", fill="x", padx=0, pady=20)
 
+
 more_button = Button(right_panel,
                      text="More",
                      bg="black",
@@ -283,6 +326,26 @@ more_button = Button(right_panel,
                      command=more_button_click
                      )
 more_button.pack(side="bottom", fill="x", padx=0, pady=20)
+
+progress_bar = Progressbar(
+    right_panel,
+    orient="horizontal",
+    length=150,
+    mode="determinate",
+)
+
+progress_bar.pack(side="bottom", fill="x", padx=0, pady=10)
+
+reset_button = Button(
+    right_panel,
+    text="Сброс",
+    bg="black",
+    fg="yellow",
+    font=("Comic Sans MS", 14, "bold"),
+    bd=6,
+    command=reset_button_click,
+    compound="right"
+)
 
 add_button = Button(right_panel,
                     text="Add",
@@ -351,6 +414,7 @@ buy_list.pack(fill="x", side="bottom")
 update_balance()
 update_inventory()
 update_Shop_list()
+update_progress()
 
 auto_income()
 
