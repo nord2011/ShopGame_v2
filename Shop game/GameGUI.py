@@ -195,6 +195,7 @@ def auto_income():
     player.balance += total_income * boost
     update_balance()
 
+
     window.after(1000, auto_income)
 
 def update_progress():
