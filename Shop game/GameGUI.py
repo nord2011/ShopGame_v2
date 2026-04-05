@@ -47,6 +47,7 @@ def more_button_click():
     sell_button.pack_forget()
     exit_button.pack_forget()
     more_button.pack_forget()
+    progress_bar.pack_forget()
 
     back_button.pack(side="bottom", fill="x", padx=0, pady=0)
     add_button.pack(side="bottom", fill="x", padx=0, pady=20)
@@ -221,12 +222,20 @@ def update_progress():
 
 def reset_button_click():
     global boost
+    a = []
     shop_inv = player.shop.shop_list.copy()
     player.shop.shop_list.clear()
     for product in player.inventory:
         player.shop.shop_list.append(product)
-    for product in shop_inv:
-        player.shop.shop_list.append(product)
+    for product in player.shop.shop_list:
+        a.append(product.name)
+    for i in range(len(shop_inv)):
+        for j in range(len(a)):
+            if shop_inv[i].name == a[j]:
+                player.shop.shop_list[j].quantity += shop_inv[i].quantity
+        player.shop.shop_list.append(shop_inv[i])
+
+
 
     player.inventory.clear()
     update_inventory()
@@ -259,6 +268,7 @@ def back_button_click():
     buy_button.pack(side="bottom", fill="x", padx=0, pady=20)
     sell_button.pack(side="bottom", fill="x", padx=0, pady=20)
     more_button.pack(side="bottom", fill="x", padx=0, pady=20)
+    progress_bar.pack(side="bottom", fill="x", padx=0, pady=10)
 
 
 window = Tk()
