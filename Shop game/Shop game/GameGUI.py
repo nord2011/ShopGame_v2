@@ -4,9 +4,9 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showinfo, showwarning
 from tkinter.ttk import Progressbar
 import shop
-import os
 from PIL import Image, ImageTk
 import os
+import sys
 
 # ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
 global boost
@@ -26,6 +26,12 @@ shop_canvas = None
 
 
 # ================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =================
+def get_path(filename):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, filename)
+    else:
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+
 def create_scroll_container(parent, height=120):
     """Создаёт область с прокруткой для карточек товаров"""
     global inv_canvas, shop_canvas
@@ -358,10 +364,10 @@ window.configure(bg="orange")
 
 # Загрузка картинок кнопок (с проверкой на наличие файлов)
 try:
-    more_button_image = PhotoImage(file="more_button.png")
-    buy_button_image = PhotoImage(file="buy_button.png")
-    sell_button_image = PhotoImage(file="sell_button.png")
-    exit_button_image = PhotoImage(file="exit_button.png")
+    more_button_image = PhotoImage(file=get_path("more_button.png"))
+    buy_button_image = PhotoImage(file=get_path("buy_button.png"))
+    sell_button_image = PhotoImage(file=get_path("sell_button.png"))
+    exit_button_image = PhotoImage(file=get_path("exit_button.png"))
 except Exception as e:
     print(f"⚠️ Не удалось загрузить картинки кнопок: {e}")
 
